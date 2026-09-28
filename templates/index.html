@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes Sharing System</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 820px; margin: 0 auto; padding: 16px; background: #f4f6fb; color: #222; }
+    h1 { color: #1d3c8f; }
+    form.box, .note { background: #fff; border-radius: 8px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    input, textarea, select { width: 100%; padding: 8px; margin: 4px 0 10px; box-sizing: border-box; }
+    button { background: #1d3c8f; color: #fff; border: 0; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .tag { background: #e3e9ff; color: #1d3c8f; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+    .meta { color: #666; font-size: 13px; }
+    .row { display: flex; gap: 8px; } .row > * { flex: 1; }
+    footer { text-align: center; color: #888; font-size: 13px; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <h1>Notes Sharing System</h1>
+  <p>{{ total }} notes shared by students.</p>
+
+  <form class="box" method="POST" action="/add">
+    <h3>Share a note</h3>
+    <div class="row">
+      <input name="title" placeholder="Title" maxlength="100" required>
+      <input name="subject" placeholder="Subject (e.g. DBMS)" required>
+      <input name="author" placeholder="Your name" required>
+    </div>
+    <textarea name="content" rows="4" placeholder="Write your notes or paste a link..." maxlength="2000" required></textarea>
+    <button>Share note</button>
+  </form>
+
+  <form class="box" method="GET" action="/">
+    <div class="row">
+      <input name="q" placeholder="Search notes..." value="{{ query }}">
+      <select name="subject">
+        <option value="">All subjects</option>
+        {% for s in subjects %}
+          <option value="{{ s }}" {% if s == subject %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <button>Search</button>
+    </div>
+  </form>
+
+  {% for n in notes %}
+    <div class="note">
+      <h3>{{ n.title }} <span class="tag">{{ n.subject }}</span></h3>
+      <p>{{ n.content }}</p>
+      <p class="meta">by {{ n.author }}</p>
+      <form method="POST" action="/like/{{ n.id }}"><button>Helpful ({{ n.likes }})</button></form>
+    </div>
+  {% else %}
+    <p>No notes found.</p>
+  {% endfor %}
+
+  <footer>commit {{ commit }}</footer>
+</body>
+</html>
